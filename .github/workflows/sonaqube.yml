@@ -1,0 +1,47 @@
+name: SonarQube
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v4
+
+      # Run SonarQube Scan
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      # Send email notification with SonarQube report link
+      - name: Send Email Notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USER }}
+          password: ${{ secrets.EMAIL_PASS }}
+          subject: "SonarQube Report: ${{ github.workflow }} #${{ github.run_number }}"
+          to: ${{ secrets.EMAIL_USER }}
+          from: ${{ secrets.EMAIL_USER }}
+          html_body: |
+            <h2>GitHub Actions Pipeline - SonarQube Report</h2>
+            <p>Workflow: <b>${{ github.workflow }}</b></p>
+            <p>Run Number: <b>${{ github.run_number }}</b></p>
+            <p>Status: <b>${{ job.status }}</b></p>
+            <p>Commit: <b>${{ github.sha }}</b></p>
+            <p>Triggered by: <b>${{ github.actor }}</b></p>
+            <p><b>SonarQube Report:</b> 
+              <a href="${{ secrets.SONAR_HOST_URL }}/dashboard?id=${{ github.repository }}">
+              View SonarQube Analysis</a>
+            </p>
+            <p><b>GitHub Build:</b> 
+              <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">
+              View Build Logs</a>
+            </p>
