@@ -38,7 +38,7 @@ jobs:
             <p>Commit: <b>${{ github.sha }}</b></p>
             <p>Triggered by: <b>${{ github.actor }}</b></p>
             <p><b>SonarQube Report:</b> 
-              <a href="${{ secrets.SONAR_HOST_URL }}/dashboard?id=${{ github.repository }}">
+              <a href="${{ secrets.SONAR_HOST_URL }}/dashboard?id=Testing&codeScope=overall">
               View SonarQube Analysis</a>
             </p>
             <p><b>GitHub Build:</b> 
